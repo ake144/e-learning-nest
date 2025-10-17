@@ -1,0 +1,59 @@
+# version: '2.0'
+
+# services:
+#   web:
+#     image: nginx:latest
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - ./html:/usr/share/nginx/html
+#     networks:
+#       - webnet
+
+#   app:
+#     image: myapp:latest
+#     build: ./app
+#     environment:
+#       - APP_ENV=production
+#       - APP_DEBUG=false
+#     depends_on:
+#       - db
+#     networks:
+#       - webnet
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydatabase
+    ports:
+      - "5432:5432"
+  
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  
+
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+  
+  app:
+    build: .
+    container_name: nest_app
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydatabase
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "3000:3000"
