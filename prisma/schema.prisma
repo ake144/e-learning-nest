@@ -32,3 +32,21 @@ model Post {
 }
 
 
+
+model Course{
+  id        Int     @id @default(autoincrement())
+  title     String
+  description String
+  createdAt  DateTime @default(now())
+  imageUrl   String
+  price      Float
+  lessons    Lesson[]
+}
+
+model Lesson {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String
+  course    Course? @relation(fields: [courseId], references: [id])
+  courseId  Int?
+}

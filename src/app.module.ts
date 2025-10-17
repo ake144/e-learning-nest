@@ -12,6 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
 import { Keyv } from 'keyv';
 import { CacheableMemory } from 'cacheable';
+import { CourseModule } from './course/course.module';
 
 
 @Module({
@@ -36,7 +37,8 @@ import { CacheableMemory } from 'cacheable';
          }
           
        }
-    })
+    }),
+    CourseModule
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],
