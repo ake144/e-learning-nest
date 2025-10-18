@@ -10,10 +10,10 @@ import { AuthGuard } from 'src/auth/auth.gard';
   imports: [PrismaModule],
   controllers: [UsersController],
   providers: [UsersService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard
-    }
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard
+    // }
   ],
   exports: [UsersService], 
 })

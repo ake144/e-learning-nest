@@ -13,7 +13,7 @@ interface Cache {
 
 @Injectable()
 export class CourseService {
-   constructor(@Inject('CACHE') private cache: Cache, private prisma: PrismaService) {}
+   constructor( private prisma: PrismaService) {}
 
 
   create(createCourseDto: Prisma.CourseCreateInput) {
@@ -23,26 +23,26 @@ export class CourseService {
   }
 
   async findAll() {
-    const cachedCourses = await this.cache.get('courses');
-    if (cachedCourses) return cachedCourses;
 
     const courses = await this.prisma.course.findMany();
-    await this.cache.set('courses', courses);
+       if(!courses){
+        return [];
+       }
     return courses;
   }
 
   async findOne(id: number) {
-    const cachedCourse = await this.cache.get(`course:${id}`);
-    if (cachedCourse) return cachedCourse;
-
+   
     const course = await this.prisma.course.findUnique({
       where: { id },
     });
-    await this.cache.set(`course:${id}`, course);
+    if(!course){
+      return null;
+    }
     return course;
   }
 
-  update(id: number, updateCourseDto: Prisma.CourseUpdateInput) {
+  update(id: number, updateCourseDto: UpdateCourseDto) {
     return this.prisma.course.update({
       where: { id },
       data: updateCourseDto,

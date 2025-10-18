@@ -25,6 +25,12 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
+  @Public()
+  @Get('by-email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.usersService.findByEmail(email);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: Prisma.UserUpdateInput) {
     return this.usersService.update(+id, updateUserDto);

@@ -3,12 +3,11 @@ import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-   constructor(@Inject(Cache) private readonly cache:Cache){}
+  //  constructor(@Inject(Cache) private readonly cache:Cache){}
 
 
   async getHello(): Promise<any> {
-    await this.cache.set("greeting", "Hello World!");
-    const greeting = await this.cache.get("greeting");
+    const greeting = { message: 'Hello World!' };
     return greeting;
   }
 }

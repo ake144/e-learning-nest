@@ -3,7 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Prisma, User } from '@prisma/client';
-
+import { Public } from 'src/auth/public.decorator';
+import * as bcrypt from 'bcrypt';
 
 interface Cache {
   get<T>(key: string): T | undefined;
@@ -12,10 +13,12 @@ interface Cache {
 }
 @Injectable()
 export class UsersService {
-  constructor(@Inject('CACHE') private cache: Cache, private prisma: PrismaService) {}
+  // constructor(@Inject('CACHE') private cache: Cache, private prisma: PrismaService) {}
+  constructor( private prisma: PrismaService) {}
 
-  create(createUserDto: Prisma.UserCreateInput):Promise<User> {
-    return this.prisma.user.create({data:createUserDto})
+  async create(createUserDto: Prisma.UserCreateInput):Promise<User> {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    return this.prisma.user.create({data:{...createUserDto,password:hashedPassword}})
   }
 
   async users(params:{
@@ -36,37 +39,35 @@ export class UsersService {
   }
 
 
-  findAll() {
-    const users = this.cache.get<User[]>('users');
-    if (users) return users;
-    const allUsers = this.prisma.user.findMany();
-    this.cache.set('users', allUsers);
+  async findAll() {
+
+    const allUsers = await this.prisma.user.findMany();
+   
     return allUsers;
   }
 
-  findOne(id: number) {
-    const user = this.cache.get<User>(`user:${id}`);
-    if (user) return user;
-    console.log("Cache miss for user:", id);
+  async findOne(id: number) {
 
-    const dbUser = this.prisma.user.findUnique({
+    const dbUser = await this.prisma.user.findUnique({
       where: { id },
     });
-    this.cache.set(`user:${id}`, dbUser);
+    if(!dbUser){
+      return null;
+    }
+ 
     return dbUser;
   }
 
-  findByEmail(email: string) {
-    const user = this.cache.get<User>(`user:email:${email}`);
-    if (user) return user;
-    console.log("Cache miss for user by email:", email);
-    
-    this.cache.set(`user:email:${email}`, this.prisma.user.findUnique({
-      where: { email },
-    }));
-    return this.prisma.user.findUnique({
+ @Public()
+  async findByEmail(email: string) {
+
+    const dbUser = await this.prisma.user.findUnique({
       where: { email },
     });
+    if (!dbUser) {
+      return null;
+    }
+    return dbUser;
   }
 
 

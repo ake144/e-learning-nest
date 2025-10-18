@@ -12,24 +12,17 @@ interface Cache {
 
 @Injectable()
 export class PostsService {
-    constructor(@Inject('CACHE') private cache: Cache, private prisma: PrismaService) {}
+    // constructor(@Inject('CACHE') private cache: Cache,
+    //   private prisma: PrismaService) {}
+     constructor(private prisma: PrismaService) {}
     
 
    async findAll(): Promise<Post[]> {
-       const cachedPosts = await this.cache.get<Post[]>('posts');
-         console.log("Cached posts:", cachedPosts);
-
-       if (cachedPosts) return cachedPosts;
-         
        const posts = await this.prisma.post.findMany();
-       await this.cache.set('posts', posts);
        return posts;
    }
 
    async findOne(id: number): Promise<Post | null> {
-       const cachedPost = await this.cache.get<Post>(`post:${id}`);
-       if (cachedPost) return cachedPost;
-          console.log("Cached post:", cachedPost);
 
          const post = await this.prisma.post.findUnique({
            where: { id }
@@ -37,7 +30,6 @@ export class PostsService {
 
        if (!post) throw new NotFoundException(`Post with id ${id} not found`);
 
-       await this.cache.set(`post:${id}`, post);
        return post;
     }
 

@@ -1,59 +1,56 @@
-# version: '2.0'
+version: "3.9"
 
-# services:
-#   web:
-#     image: nginx:latest
-#     ports:
-#       - "80:80"
-#     volumes:
-#       - ./html:/usr/share/nginx/html
-#     networks:
-#       - webnet
-
-#   app:
-#     image: myapp:latest
-#     build: ./app
-#     environment:
-#       - APP_ENV=production
-#       - APP_DEBUG=false
-#     depends_on:
-#       - db
-#     networks:
-#       - webnet
 services:
+  # PostgreSQL database
   db:
     image: postgres:latest
+    container_name: postgres_db
     environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=mypassword
-      - POSTGRES_DB=mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
     ports:
-      - "5432:5432"
-  
+      - "5432:5432"  # host:container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Adminer for DB management
   adminer:
     image: adminer:latest
-    restart: always
+    container_name: adminer
     ports:
       - "8080:8080"
     depends_on:
       - db
-  
+    restart: unless-stopped
 
+  # Redis cache
   redis:
     image: redis:latest
     container_name: redis_cache
     ports:
       - "6379:6379"
-  
+    restart: unless-stopped
+
+  # NestJS backend
   app:
     build: .
     container_name: nest_app
+    command: npm run start:dev   # use start:dev for hot reload in development
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydatabase
-      - REDIS_URL=redis://redis:6379
+      NODE_ENV: development
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydatabase
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - .:/usr/src/app           # mount local code for hot reload
+      - /usr/src/app/node_modules
     depends_on:
       - db
       - redis
     ports:
       - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
