@@ -26,7 +26,7 @@ export class AuthService {
     // You may want to return a JWT token here as in the commented code below
     const payload = { sub: user.id, username: user.name ,  email: user.email};
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload, {expiresIn:'1h'}),
     };
   }
 

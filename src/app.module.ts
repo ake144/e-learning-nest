@@ -1,4 +1,4 @@
-import { ConfigurableModuleBuilder, Module } from '@nestjs/common';
+import { ConfigurableModuleBuilder, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +13,7 @@ import KeyvRedis from '@keyv/redis';
 import { Keyv } from 'keyv';
 import { CacheableMemory } from 'cacheable';
 import { CourseModule } from './course/course.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 
 @Module({
@@ -43,4 +44,11 @@ import { CourseModule } from './course/course.module';
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+
+}

@@ -41,7 +41,9 @@ export class UsersService {
 
   async findAll() {
 
-    const allUsers = await this.prisma.user.findMany();
+    const allUsers = await this.prisma.user.findMany({
+      omit: { password: true }
+    });
    
     return allUsers;
   }
@@ -50,6 +52,7 @@ export class UsersService {
 
     const dbUser = await this.prisma.user.findUnique({
       where: { id },
+      omit: { password: true }
     });
     if(!dbUser){
       return null;
@@ -63,6 +66,7 @@ export class UsersService {
 
     const dbUser = await this.prisma.user.findUnique({
       where: { email },
+      
     });
     if (!dbUser) {
       return null;
