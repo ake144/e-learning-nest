@@ -23,22 +23,22 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     UsersModule,
     AuthModule,
     DatabaseModule,
-    // CacheModule.registerAsync({
-    //    useFactory: async()=>{
-    //      return {
-    //          stores: [
-    //            new Keyv({
-    //                store: new CacheableMemory({ ttl:60000, lruSize:5000 })
-    //            }),
-    //             new Keyv({
-    //               store: new KeyvRedis(process.env.REDIS_URL)
-    //             })
+    CacheModule.registerAsync({
+       useFactory: async()=>{
+         return {
+             stores: [
+               new Keyv({
+                   store: new CacheableMemory({ ttl:60000, lruSize:5000 })
+               }),
+                new Keyv({
+                  store: new KeyvRedis(process.env.REDIS_URL)
+                })
 
-    //          ]
-    //      }
+             ]
+         }
           
-    //    }
-    // }),
+       }
+    }),
     CourseModule
   ],
   controllers: [AppController, PostsController],
