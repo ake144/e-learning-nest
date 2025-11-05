@@ -14,10 +14,13 @@ import { Keyv } from 'keyv';
 import { CacheableMemory } from 'cacheable';
 import { CourseModule } from './course/course.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './cron.service';
 
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     PostsModule,
     UsersModule,
@@ -42,7 +45,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     CourseModule
   ],
   controllers: [AppController, PostsController],
-  providers: [AppService, PostsService],
+  providers: [AppService, PostsService, TasksService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
