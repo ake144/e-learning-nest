@@ -1,8 +1,22 @@
-import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
 
 
-@WebSocketGateway()
+
+
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class AppGateway {
+    
     @SubscribeMessage('message')
     handleMessage(client: any, payload: any): string {
         console.log('Received message:', payload);
