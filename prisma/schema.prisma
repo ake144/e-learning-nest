@@ -20,6 +20,7 @@ model User {
   name     String?
   password String
   posts    Post[]
+  chat     Chat[]
 }
 
 model Post {
@@ -40,7 +41,18 @@ model Course{
   createdAt  DateTime @default(now())
   imageUrl   String
   price      Float
+  chat       Chat[]
   lessons    Lesson[]
+}
+
+model Chat {
+  id        Int   @id @default(autoincrement())
+  message     String
+  createdAt    DateTime  @default(now())
+  courseId   Int?
+  userId     Int?
+  user       User?   @relation(fields: [userId], references: [id])   
+  course     Course?  @relation(fields: [courseId], references: [id])
 }
 
 model Lesson {
