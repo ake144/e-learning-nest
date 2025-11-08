@@ -15,7 +15,8 @@ import { CacheableMemory } from 'cacheable';
 import { CourseModule } from './course/course.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TasksService } from './cron.service';
+import { TasksService } from './task/cron.service';
+import { TaskModule } from './task/task.module';
 
 
 @Module({
@@ -25,6 +26,7 @@ import { TasksService } from './cron.service';
     PostsModule,
     UsersModule,
     AuthModule,
+    TaskModule,
     DatabaseModule,
     CacheModule.registerAsync({
        useFactory: async()=>{

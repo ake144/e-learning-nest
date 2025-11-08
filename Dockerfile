@@ -7,7 +7,7 @@ RUN npm install --production
 
 COPY . .
 
-# Ensure correct Prisma binaries are generated for Alpine
+
 RUN npx prisma generate
 
 RUN npm run build
