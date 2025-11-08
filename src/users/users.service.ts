@@ -5,16 +5,12 @@ import { PrismaService } from 'src/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { Public } from 'src/auth/public.decorator';
 import * as bcrypt from 'bcrypt';
+import { Cache } from '@nestjs/cache-manager';
 
-interface Cache {
-  get<T>(key: string): T | undefined;
-  set<T>(key: string, value: T): void;
-  // Add other methods as needed
-}
+
 @Injectable()
 export class UsersService {
-  // constructor(@Inject('CACHE') private cache: Cache, private prisma: PrismaService) {}
-  constructor( private prisma: PrismaService) {}
+  constructor(@Inject(Cache) private cache: Cache, private prisma: PrismaService) {}
 
   async create(createUserDto: Prisma.UserCreateInput):Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -39,12 +35,19 @@ export class UsersService {
   }
 
 
-  async findAll() {
+  async findAll(): Promise<Omit<User, 'password'>[] | undefined> {
+
+     const users  = this.cache.get<Omit<User, 'password'>[]>('users');
+      if(users){
+
+        return users;
+      }
 
     const allUsers = await this.prisma.user.findMany({
       omit: { password: true }
     });
-   
+
+    this.cache.set<Omit<User, 'password'>[]>('users', allUsers);
     return allUsers;
   }
 

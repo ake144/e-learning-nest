@@ -5,9 +5,10 @@ import { PrismaService } from 'src/prisma.service';
 import { PrismaModule } from 'src/prisma.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.gard';
+import { CacheModule } from '@nestjs/cache-manager/dist/cache.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule ],
   controllers: [UsersController],
   providers: [UsersService,
     // {
@@ -18,3 +19,4 @@ import { AuthGuard } from 'src/auth/auth.gard';
   exports: [UsersService], 
 })
 export class UsersModule {}
+         

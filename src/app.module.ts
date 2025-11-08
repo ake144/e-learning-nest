@@ -21,7 +21,7 @@ import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    // ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     PostsModule,
     UsersModule,
@@ -29,6 +29,7 @@ import { TaskModule } from './task/task.module';
     TaskModule,
     DatabaseModule,
     CacheModule.registerAsync({
+      isGlobal:true,
        useFactory: async()=>{
          return {
              stores: [
