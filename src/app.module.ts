@@ -17,6 +17,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './task/cron.service';
 import { TaskModule } from './task/task.module';
+import { GatewayModule } from './websocket/gateway.module';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { TaskModule } from './task/task.module';
     PostsModule,
     UsersModule,
     AuthModule,
+    GatewayModule,
     TaskModule,
     DatabaseModule,
     CacheModule.registerAsync({
