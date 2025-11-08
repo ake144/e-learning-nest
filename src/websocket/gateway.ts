@@ -34,9 +34,16 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('joinCourse')
-  handleJoinCourse(@MessageBody() data: { courseId: number }, @ConnectedSocket() client: Socket) {
+  async handleJoinCourse(@MessageBody() data: { courseId: number },
+   @ConnectedSocket() client: Socket) {
     client.join(`course-${data.courseId}`);
     console.log(`Client ${client.id} joined course-${data.courseId}`);
+
+    const messages = await this.gatewayService.findMessagesByCourseId(data.courseId);
+    client.emit('messageHistory', messages);
+
+    console.log(`Sent message history to client ${client.id} for course-${data.courseId}`);
+
   }
 
   @SubscribeMessage('sendMessage')
@@ -48,23 +55,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       
 
     this.server.to(`course-${data.courseId}`).emit('newMessage', {
-      message: data.message,
-      userId: data.userId,
+      message: savedMessage.message,
+      userId: savedMessage.userId,
       timestamp: new Date(),
     });
     console.log(`Message sent to course-${data.courseId}:`, data.message);
-  }
-
-  @SubscribeMessage('listenToMessages')
-  handleListenToMessages(@MessageBody() data: { courseId: number }, @ConnectedSocket() client: Socket) {
-      const messages = this.gatewayService.findMessagesByCourseId(data.courseId);
-        messages.then((msgs) => {
-            client.emit('messageHistory', msgs);
-        });
-
-
-        console.log(`Sent message history to client ${client.id} for course-${data.courseId}`);
-        
   }
 
   // Keep existing handlers if needed
