@@ -3,7 +3,6 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { Prisma } from 'generated/prisma';
 
 @Controller('course')
 export class CourseController {
