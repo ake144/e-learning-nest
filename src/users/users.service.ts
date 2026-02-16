@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -10,11 +11,17 @@ import { Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject(Cache) private cache: Cache, private prisma: PrismaService) {}
+  constructor(
+    @Inject(Cache) private cache: Cache, 
+    private prisma: PrismaService,
+    @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
+  ) {}
 
   async create(createUserDto: Prisma.UserCreateInput):Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    return this.prisma.user.create({data:{...createUserDto,password:hashedPassword}})
+    const user = await this.prisma.user.create({data:{...createUserDto,password:hashedPassword}});
+    this.kafkaClient.emit('user.created', JSON.stringify(user));
+    return user;
   }
 
   async users(params:{

@@ -13,7 +13,7 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers: ['localhost:29092'],
+        brokers: [process.env.KAFKA_BROKER || 'localhost:29092'],
       },
       consumer: {
         groupId: 'hybrid-app-consumer',

@@ -40,6 +40,7 @@ services:
     command: npm run start:dev   # use start:dev for hot reload in development
     environment:
       NODE_ENV: development
+      KAFKA_BROKER: kafka:9092
       DATABASE_URL: postgresql://myuser:mypassword@db:5432/mydatabase
       REDIS_URL: redis://redis:6379
     volumes:

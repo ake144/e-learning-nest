@@ -17,7 +17,7 @@ import { CacheModule } from '@nestjs/cache-manager/dist/cache.module';
         transport: Transport.KAFKA,
         options: {
           client: {
-            brokers: ['localhost:29092'],
+            brokers: [process.env.KAFKA_BROKER || 'localhost:29092'],
           },
           consumer: {
             groupId: 'user-producer-consumer',
