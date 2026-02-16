@@ -22,10 +22,12 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) {
-      
       return true;
     }
 
+    if (context.getType() === 'rpc') {
+      return true;
+    }
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);

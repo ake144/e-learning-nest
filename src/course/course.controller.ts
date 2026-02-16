@@ -4,13 +4,11 @@ import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Prisma } from 'generated/prisma';
-import { Public } from 'src/auth/public.decorator';
 
 @Controller('course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
-  @Public()
   @EventPattern('user.created')
   handleUserCreated(@Payload() data: any) {
     console.log('Course Service received user.created:', data);
